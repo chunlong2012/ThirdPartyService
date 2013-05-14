@@ -1,19 +1,35 @@
 class ClientTest
   class << self
     #qq: 272142606
-    @@ACCESS_TOKEN = "4CC04300BE65895837ED2ADF6E1188E8&expires_in=7776000"
+    #open mobile, 而不是graph
+    @@ACCESS_TOKEN = "FC5D2E01E6CAD589917A0C6DC29FF307"
 
-    def get_access_token
-      @@ACCESS_TOKEN
+    def test_get_user_info
+      open_id = Qq.get_open_id(@@ACCESS_TOKEN)
+      puts Qq.get_user_info(@@ACCESS_TOKEN,open_id)
+     # response = RestClient.post "localhost:3000/qq/get_user_info",:token => @@ACCESS_TOKEN, :open_id => open_id
     end
 
-    def get_open_id
-      response = RestClient.get "https://graph.qq.com/oauth2.0/me?access_token=" + @@ACCESS_TOKEN
-      body = response.body
-      body = body.slice(10,body.size - 10 - 4)
-      result = JSON.parse(body)
-      result["openid"]
+    def test_get_info
+      open_id = Qq.get_open_id(@@ACCESS_TOKEN)
+      puts Qq.get_info(@@ACCESS_TOKEN,open_id)
+      # response = RestClient.post "localhost:3000/qq/get_user_info",:token => @@ACCESS_TOKEN, :open_id => open_id
     end
 
+    def test_add_pic_t
+      open_id = Qq.get_open_id(@@ACCESS_TOKEN)
+      pic = File.new("test.png","rb")
+     # puts QQ.add_pic_t(@@ACCESS_TOKEN,open_id,"test",pic)
+
+      response = RestClient.post "localhost:3000/qq/add_pic_t",:token => @@ACCESS_TOKEN, :open_id => open_id, :content => "test hello", :pic => pic
+    end
+
+
+    def test_list_album
+      open_id = Qq.get_open_id(@@ACCESS_TOKEN)
+      puts Qq.list_album(@@ACCESS_TOKEN,open_id)
+    end
   end
+
+
 end
