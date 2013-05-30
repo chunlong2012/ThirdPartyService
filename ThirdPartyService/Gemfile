@@ -39,3 +39,4 @@ gem 'jquery-rails'
 
 gem 'json'
 gem 'rest-client'
+gem 'resque'
