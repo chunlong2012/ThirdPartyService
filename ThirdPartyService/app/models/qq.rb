@@ -37,10 +37,7 @@ class Qq
       if lat != nil
         params[:latitude] = lat
       end
-=begin
-      response = RestClient.post url, :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
-                                 :content => content, :pic => File.new(img_file, 'rb')
-=end
+
       response = RestClient.post url, params
   end
 

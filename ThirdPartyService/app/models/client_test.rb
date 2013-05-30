@@ -24,7 +24,6 @@ class ClientTest
       response = RestClient.post "localhost:3000/qq/add_pic_t",:token => @@ACCESS_TOKEN, :open_id => open_id, :content => "test hello", :pic => pic
     end
 
-
     def test_list_album
       open_id = Qq.get_open_id(@@ACCESS_TOKEN)
       puts Qq.list_album(@@ACCESS_TOKEN,open_id)
