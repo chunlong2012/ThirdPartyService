@@ -13,4 +13,7 @@ class QqWeiboController < ApplicationController
       render :json => {:success => true}
   end
 
+  def test
+    render :text=>"qq weibo test"
+  end
 end
