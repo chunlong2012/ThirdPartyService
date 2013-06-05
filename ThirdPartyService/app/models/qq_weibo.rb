@@ -20,6 +20,8 @@ class QqWeibo
        response = RestClient.get url
      end
 
+     #{"data":{"id":"264083075336830","time":1370415584},
+     #"errcode":0,"imgurl":"http:\/\/t1.qpic.cn\/mblogpic\/154ac425f86742daec38","msg":"ok","ret":0,"seqid":5885890110916371426}
      def add_pic(access_token, open_id, content, lng, lat, img_file, client_ip)
        params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
                  :oauth_version => '2.a', :scope => 'all',
