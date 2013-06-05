@@ -13,3 +13,4 @@ class QqWeiboController < ApplicationController
       render :json => {:success => true}
   end
 end
+

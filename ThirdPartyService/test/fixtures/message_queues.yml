@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  command_type: 1
+  token: MyString
+  message: MyString
+  device: MyString
+
+two:
+  command_type: 1
+  token: MyString
+  message: MyString
+  device: MyString
