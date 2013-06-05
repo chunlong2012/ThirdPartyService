@@ -28,6 +28,8 @@ class ClientTest
       open_id = Qq.get_open_id(@@ACCESS_TOKEN)
       puts Qq.list_album(@@ACCESS_TOKEN,open_id)
     end
+
+
   end
 
 

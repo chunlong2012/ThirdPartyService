@@ -4,6 +4,7 @@ class QqWeiboAddPicJob
   def self.perform(sync_history_id, call_back, access_token, open_id, content, lng, lat, img_file, client_ip)
     response = QqWeibo.add_pic(access_token, open_id, content, lng, lat, img_file, client_ip)
     result =  JSON.parse response
+    QqWeiboAddPicJobLog "=======================================#{sync_history_id},#{access_token},#{open_id}=======================================================\n"
 
     params = {}
     if result[:ret] == 0
@@ -14,6 +15,7 @@ class QqWeiboAddPicJob
     else
       params[:result] = 1
       params[:error_msg] = result[:msg]
+      QqWeiboAddPicJobLog response
     end
 
     RestClient.get call_back + "?" + params.to_query
