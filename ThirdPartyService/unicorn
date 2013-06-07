@@ -3,8 +3,8 @@ set -e
 set -u
 
 TIMEOUT=${TIMEOUT-60}
-UNICORN=/home/vidafm/.rvm/gems/ruby-1.9.3-p392/bin/unicorn_rails
-APP_ROOT=/home/vidafm/ThirdPartyService/ThirdPartyService
+UNICORN= bundle exec unicorn
+APP_ROOT=/home/vidaprint/ThirdPartyService/ThirdPartyService
 PID=$APP_ROOT/tmp/pids/unicorn.pid
 CMD="$UNICORN -D -c $APP_ROOT/config/unicorn.rb -E development"
 action="$1"
