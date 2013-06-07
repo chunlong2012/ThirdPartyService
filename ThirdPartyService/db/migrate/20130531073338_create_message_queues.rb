@@ -5,6 +5,7 @@ class CreateMessageQueues < ActiveRecord::Migration
       t.string :token
       t.string :message
       t.string :app
+      t.integer :device
 
       t.timestamps
     end

@@ -2,9 +2,8 @@ class CreateTokens < ActiveRecord::Migration
   def change
     create_table :tokens do |t|
       t.string :token
-      t.string :device
-      t.binary :vida
-      t.binary :vimi
+      t.integer :device
+      t.string :app
 
       t.timestamps
     end

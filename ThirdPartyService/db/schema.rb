@@ -18,15 +18,15 @@ ActiveRecord::Schema.define(:version => 20130531073338) do
     t.string   "token"
     t.string   "message"
     t.string   "app"
+    t.integer  "device"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
   end
 
   create_table "tokens", :force => true do |t|
     t.string   "token"
-    t.string   "device"
-    t.binary   "vida"
-    t.binary   "vimi"
+    t.integer  "device"
+    t.string   "app"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
