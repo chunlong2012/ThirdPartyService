@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 module APNS
 	@hold_time = 600	# second
 	@net = { 0 => {
@@ -10,21 +12,25 @@ module APNS
 	# 在@net中 0为ios的连接 1为android的连接
 
 	def self.info( msg )
-		puts "[#{ Time .now }] #{ msg }"
+		#puts "[#{ Time .now }] #{ msg }"
+		ApnsPushLog.log( msg )
 	end
 
 	def self.open_all_connection
+		info "Start connect to Notification Server"
 		@net[ 0 ] .each { |c| c[ 1 ] .open_connection }
 		@net[ 1 ] .each { |c| c[ 1 ] .open_connection }
+		info "Connection Success"
 	end
 
 	def self.close_all_connection
 		@net[ 0 ] .each { |c| c[ 1 ] .close_connection }
 		@net[ 1 ] .each { |c| c[ 1 ] .close_connection }
+		info "Close Connection"
 	end
 
 	def self.working
-		# starting working to sending push
+		info "=========>>> starting working to sending push <<<========="
 		last_send_time = Time.now
 		open_all_connection
 
@@ -38,10 +44,10 @@ module APNS
 				n = APNS::Notification.new( query[ "token" ] , query[ "message" ] )
 				@net[ query[ "device" ] ] [ query[ "app" ] .to_sym ] .sendmsg( n.packaged_notification )
 
-				info "Message has been sent to user(#{ query[ "token" ] })"
+				info "Message(#{ query[ "message" ] }) has been sent to user(#{ query[ "token" ] })"
 
 			when 1 # group push
-				info "Start group push" 
+				info "Start group push with message(#{ query[ "message" ] })" 
 
 				Token.each_token( query[ :app ] , query[ :device ] ) do | token |
 					n = APNS::Notification.new( token[ :token ] , query[ "message" ] )
@@ -55,6 +61,24 @@ module APNS
 		end
 
 		close_connection
+	end
+
+	def self.start_working
+		begin
+			working
+		rescue
+			info "Error: #{ e.message }"
+		end
+	end
+
+	def self.test01
+		# Single Push Test
+		RestClient.post "vimi.in:6000/push/ios_push",:token => "b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab", :message => "这是一个中文测试" , :app => "vimi"
+	end
+
+	def self.test02
+		# Group Push Test
+		RestClient.post "vimi.in:6000/push/group_push" , :message => "这里在测试多人的push情况" , :app => "vida"
 	end
 
 	class Notification

@@ -1,3 +1,3 @@
 task :start_push_monitor => :environment do
-	APNS.working
+	APNS.start_working
 end
