@@ -5,7 +5,7 @@ class Token < ActiveRecord::Base
   @device_h = { "ios" => 0 , "android" => 1 }
 
   def self.new_token( token , device , app )
-  	m = Token.find_by_token( token )
+  	m = Token.where( [ "token = ? and device = ? and app = ?" , token , device , app ] ).find( :first )
   	m = Token.new( 
   		:token => token ,
   		:device => @device_h[ device ] ,

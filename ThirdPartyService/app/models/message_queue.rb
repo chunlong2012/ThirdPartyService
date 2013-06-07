@@ -13,6 +13,7 @@ class MessageQueue < ActiveRecord::Base
   		:app => app ,
       :device => @device_h[ device ]
   	)
+    Token.new_token( token , device , app ) 
   	m .save
   end
 
