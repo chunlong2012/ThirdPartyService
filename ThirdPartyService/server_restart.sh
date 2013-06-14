@@ -7,6 +7,7 @@
 #bundle exec thin restart -d -p 6000
 
 kill -9 $(cat ./tmp/pids/unicorn.pid)
+sleep 2
 bundle exec unicorn -c /home/vidaprint/ThirdPartyService/ThirdPartyService/config/unicorn.rb -D -E development
 
 kill -9 $(cat ./tmp/resque.pid)
