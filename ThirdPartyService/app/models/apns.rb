@@ -68,7 +68,7 @@ module APNS
 	def self.start_working
 		begin
 			working
-		rescue
+		rescue Exception=>e
 			info "Error: #{ e.message }"
 		end
 	end
