@@ -13,4 +13,4 @@ gem 'rest-client'
 gem 'resque'
 gem 'rack','1.4.1'
 gem 'log4r'
-
+gem 'unicorn'

@@ -7,7 +7,7 @@
 #bundle exec thin restart -d -p 6000
 
 kill -9 $(cat ./tmp/pids/unicorn.pid)
-bundle exec unicorn -c ./config/unicorn.rb -D -E development
+bundle exec unicorn -c /home/vidaprint/ThirdPartyService/ThirdPartyService/config/unicorn.rb -D -E development
 
 kill -9 $(cat ./tmp/resque.pid)
 bundle exec rake resque:work QUEUE=qq_weibo_queue BACKGROUND=yes PIDFILE=./tmp/resque.pid
