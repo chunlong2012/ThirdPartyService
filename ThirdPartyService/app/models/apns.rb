@@ -39,6 +39,8 @@ module APNS
 			sleep 10 if Time.now - last_send_time >= @hold_time
 			sleep 2 and next if query .nil?
 
+			info "Error: Push message not found!!!" if query[ "message" ] .nil?
+
 			case query[ "command_type" ]
 			when 0 # single push
 				n = APNS::Notification.new( query[ "token" ] , query[ "message" ] )
