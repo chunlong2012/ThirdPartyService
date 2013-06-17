@@ -25,7 +25,7 @@ class QqWeibo
      def add_pic(access_token, open_id, content, lng, lat, img_file, client_ip)
        params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
                  :oauth_version => '2.a', :scope => 'all',
-                 :content => content, :pic => img_file}
+                 :content => content, :pic => File.new(img_file,"rb")}
 
        params[:clientip] = client_ip  unless client_ip != nil
        params[:longitude] = lng  unless lng != nil

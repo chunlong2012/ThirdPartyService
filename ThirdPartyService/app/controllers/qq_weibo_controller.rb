@@ -9,7 +9,12 @@ class QqWeiboController < ApplicationController
   end
 
   def async_add_pic
-      Resque.enqueue(QqWeiboAddPicJob,params[:sync_history_id],params[:call_back],params[:token],params[:open_id],params[:content],params[:lng],params[:lat],params[:pic],params[:clientip])
+      file_name = "public/" + UUIDTools::UUID.timestamp_create.to_s
+      File.open(file_name,"wb") do |f|
+        f.write(params[:pic].read)
+      end
+
+      Resque.enqueue(QqWeiboAddPicJob,params[:sync_history_id],params[:call_back],params[:token],params[:open_id],params[:content],params[:lng],params[:lat],file_name,params[:clientip])
       render :json => {:success => true}
   end
 end
