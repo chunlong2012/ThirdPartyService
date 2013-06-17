@@ -14,7 +14,7 @@ class QqWeiboController < ApplicationController
         f.write(params[:pic].read)
       end
 
-      Resque.enqueue(QqWeiboAddPicJob,params[:sync_history_id],params[:call_back],params[:token],params[:open_id],params[:content],params[:lng],params[:lat],file_name,params[:clientip])
+      Resque.enqueue(QqWeiboAddPicJob,params[:sync_history_id],params[:callback],params[:token],params[:open_id],params[:content],params[:lng],params[:lat],file_name,params[:clientip])
       render :json => {:success => true}
   end
 end
