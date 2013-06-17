@@ -26,10 +26,12 @@ class QqWeiboAddPicJob
       QqWeiboAddPicJobLog response
     end
 
-    begin
-      RestClient.get call_back + "?" + params.to_query
-    rescue Exception=>e
-      QqWeiboAddPicJobLog "call_back error: " + call_back + ",  " + e.message
+    if !call_back.brank?
+      begin
+        RestClient.get call_back + "?" + params.to_query
+      rescue Exception=>e
+        QqWeiboAddPicJobLog "call_back error: " + call_back + ",  " + e.message
+      end
     end
   end
 end
