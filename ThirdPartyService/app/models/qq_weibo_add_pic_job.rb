@@ -35,5 +35,7 @@ class QqWeiboAddPicJob
         QqWeiboAddPicJobLog.log "call_back error: " + call_back + ",  " + e.message
       end
     end
+
+    `rm -f #{img_file}`
   end
 end
