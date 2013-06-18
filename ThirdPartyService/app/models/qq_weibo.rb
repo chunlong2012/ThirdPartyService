@@ -35,5 +35,24 @@ class QqWeibo
        response = RestClient.post url, params
      end
 
+     def upload_pic(access_token,open_id,img_file)
+       params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
+                 :oauth_version => '2.a', :scope => 'all',
+                 :pic_type => 2, :pic => File.new(img_file,"rb")}
+       url = @@SERVER + "/api/t/upload_pic"
+
+       begin
+          response = RestClient.post url, params
+          result = JSON.parse response
+       rescue
+          result = nil
+       end
+
+       if result == nil || result["ret"] != 0
+         return nil
+       end
+
+       return result["data"]["imgurl"]
+     end
   end
 end

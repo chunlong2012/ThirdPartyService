@@ -12,5 +12,9 @@ class QqWeiboTest
      # puts QqWeibo.add_pic(@@ACCESS_TOKEN,@@OPEN_ID,"test",nil,nil,pic,nil)
       response = RestClient.post "vida.fm:5000/qq_weibo/async_add_pic",:token => @@ACCESS_TOKEN, :open_id => @@OPEN_ID, :content => "test hello", :pic => pic
     end
+
+    def test_upload_pic
+      puts QqWeibo.upload_pic(@@ACCESS_TOKEN,@@OPEN_ID,"test.png")
+    end
   end
 end
