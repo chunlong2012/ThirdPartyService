@@ -1,3 +1,4 @@
+#encoding: utf-8
 class QqWeibo
   #oauth 2.0
   class << self
@@ -54,5 +55,59 @@ class QqWeibo
 
        return result["data"]["imgurl"]
      end
+
+     #url必须以http://打头，url中可以带参数
+     def shorten_url(access_token,open_id,long_url)
+       params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
+                 :oauth_version => '2.a', :scope => 'all',
+                 :long_url => long_url}
+       url = @@SERVER + "/api/short_url/shorten"
+
+       begin
+         response = RestClient.get url + "?" + params.to_query
+         result = JSON.parse response
+       rescue Exception => e
+         result = nil
+       end
+
+       if result == nil || result["ret"] != 0
+         return nil
+       end
+
+       return "http://url.cn/" + result["data"]["short_url"]
+     end
+
+     def add_rich(access_token,open_id,title,content,clientip,lat,lng,type,img_file,jump_url,androidcall,iphonecall)
+       params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
+                 :oauth_version => '2.a', :scope => 'all',
+                 :title => title, :content => content, :clientip => clientip, :type => type}
+
+       params[:longitude] = lng  unless lng != nil
+       params[:latitude] = lat   unless lat != nil
+
+       puts "img_url begin"
+       img_url = QqWeibo.upload_pic(access_token,open_id,img_file)
+       puts img_url
+
+       params[:img_url] = img_url
+       params[:jump_url] = jump_url
+
+       params[:androidcall] = androidcall
+       params[:iphonecall] = iphonecall
+
+       url =  "https://test.open.t.qq.com"  + "/api/t/add_rich"
+
+       begin
+         response = RestClient.get url + "?" + params.to_query
+         puts response
+         result = JSON.parse response
+         puts result.to_json
+       rescue Exception => e
+         result = nil
+         puts e.message
+       end
+
+     end
+
   end
 end

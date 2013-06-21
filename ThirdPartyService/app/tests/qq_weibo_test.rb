@@ -16,5 +16,20 @@ class QqWeiboTest
     def test_upload_pic
       puts QqWeibo.upload_pic(@@ACCESS_TOKEN,@@OPEN_ID,"test.png")
     end
+
+    def test_shorten_url
+      puts QqWeibo.shorten_url(@@ACCESS_TOKEN,@@OPEN_ID,"http://vida.fm/moments/rich?id=2137007")
+    end
+
+    def test_add_rich
+      moment_url = "http://vida.fm/moments/rich?id=2137007"
+      jump_url = QqWeibo.shorten_url(@@ACCESS_TOKEN,@@OPEN_ID,moment_url)
+      puts jump_url
+
+      androidcall = "http://vida.fm/d/android"
+      iphonecall =  "https://itunes.apple.com/cn/app/id454984086?ls=1"
+
+      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content","42.96.139.12",nil,nil,8,"test.png",jump_url,androidcall,iphonecall)
+    end
   end
 end
