@@ -48,8 +48,8 @@ module APNS
             @net[query["device"]] [query["app"].to_sym].sendmsg(n.packaged_notification)
             info "ios push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           elsif query["device"] == 1  #"android"
-             php_path = Rails.root.to_s + "/../getui-php-sdk/demo.php"
-             `php #{php_path}`
+             php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
+             `php #{php_path} #{query["token"]} #{query["message"]}`
              # `php #{php_path} "#{type}" "#{token}" "#{message}" "#{badge}" "#{user_info}" "#{sound}"`
              info "anroid push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           end

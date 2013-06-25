@@ -29,7 +29,11 @@ class ClientTest
       puts Qq.list_album(@@ACCESS_TOKEN,open_id)
     end
 
-
+    def test_anroid_push
+      token = "3f5afc260a39b454ed2d20da02703851"
+      message = "hello_world"
+      RestClient.post "http://vimi.in:6000/push/android_push", :token => token, :message => message, :app=>"vimi"
+    end
   end
 
 
