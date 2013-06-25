@@ -34,33 +34,39 @@ module APNS
 		last_send_time = Time.now
 		open_all_connection
 
-		while true
-			query = MessageQueue.get_query
-			sleep 10 if Time.now - last_send_time >= @hold_time
-			sleep 2 and next if query .nil?
+    while true
+      query = MessageQueue.get_query
+      sleep 10 if Time.now - last_send_time >= @hold_time
+      sleep 2 and next if query.nil?
 
-			info "Error: Push message not found!!!" if query[ "message" ] .nil?
+      info "Error: Push message not found!!!" if query["message"].nil?
 
-			case query[ "command_type" ]
-			when 0 # single push
-				n = APNS::Notification.new( query[ "token" ] , query[ "message" ] )
-				@net[ query[ "device" ] ] [ query[ "app" ] .to_sym ] .sendmsg( n.packaged_notification )
+      case query["command_type"]
+        when 0 # single push
+          if query["device"] == 0      #"ios"
+            n = APNS::Notification.new(query["token"], query["message"])
+            @net[query["device"]] [query["app"].to_sym].sendmsg(n.packaged_notification)
+            info "ios push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
+          elsif query["device"] == 1  #"android"
+             php_path = Rails.root.to_s + "/../getui-php-sdk/demo.php"
+             `php #{php_path}`
+             # `php #{php_path} "#{type}" "#{token}" "#{message}" "#{badge}" "#{user_info}" "#{sound}"`
+             info "anroid push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
+          end
+        when 1 # group push
+          info "Start group push with message(#{ query["message"] })"
 
-				info "Message(#{ query[ "message" ] }) has been sent to user(#{ query[ "token" ] })"
+          Token.each_token(query[:app], query[:device]) do |token|
+            n = APNS::Notification.new(token[:token], query["message"])
+            @net[token[:device]] [token[:app].to_sym].sendmsg(n.packaged_notification)
+          end
 
-			when 1 # group push
-				info "Start group push with message(#{ query[ "message" ] })" 
+          info "Finish group push"
+      end
 
-				Token.each_token( query[ :app ] , query[ :device ] ) do | token |
-					n = APNS::Notification.new( token[ :token ] , query[ "message" ] )
-					@net[ token[ :device ] ] [ token[ :app ] .to_sym ] .sendmsg( n.packaged_notification ) 
-				end
-
-				info "Finish group push"
-			end
-			MessageQueue.remove_query( query )
-			last_send_time = Time.now
-		end
+      MessageQueue.remove_query(query)
+      last_send_time = Time.now
+    end
 
 		close_connection
 	end
