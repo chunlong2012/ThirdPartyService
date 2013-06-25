@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . '/' . 'IGt.Push.php');
 define('APPKEY','ugk775NpfR64x0KRo2bmI6');
 define('APPID','5i1qDCvTEo7EklhuPztmV5');
 define('MASTERSECRET','ONg9pxrrE37ZhbWEClZQ47');
-define('HOST','http://192.168.10.61:8006/apiex.htm');
+define('HOST','http://sdk.open.api.igexin.com/apiex.htm');
 define('CID','be8f9494dab29fe9d5ebe968a03741e3');
 
 

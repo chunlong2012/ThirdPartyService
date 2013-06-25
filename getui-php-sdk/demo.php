@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . '/' . 'IGt.Push.php');
 define('APPKEY','ugk775NpfR64x0KRo2bmI6');
 define('APPID','5i1qDCvTEo7EklhuPztmV5');
 define('MASTERSECRET','ONg9pxrrE37ZhbWEClZQ47');
-define('HOST','http://192.168.10.61:8006/apiex.htm');
+define('HOST','http://sdk.open.api.igexin.com/apiex.htm');
 define('CID','3f5afc260a39b454ed2d20da02703851');
 
 
@@ -24,7 +24,7 @@ function pushMessageToSingle(){
 	//消息类型 : 透传信息
 	$template =  new IGtTransmissionTemplate(); 
 
-	$template ->set_transmissionType(2);//透传消息类型
+	$template ->set_transmissionType(1);//透传消息类型
 	$template ->set_appId(APPID);//应用appid
 	$template ->set_appkey(APPKEY);//应用appkey
 	$template ->set_transmissionContent("测试离线");//透传内容
