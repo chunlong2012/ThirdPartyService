@@ -13,7 +13,7 @@ class QqWeiboAddRichJob
       response = nil
     end
 
-=begin
+
     params = {}
     if response == nil
       params[:result] = 2
@@ -23,13 +23,13 @@ class QqWeiboAddRichJob
       params[:result] = 0
       params[:sync_history_id] = sync_history_id
       params[:remote_site_id]  = result["data"]["id"]
-      params[:remote_pic] = result["imgurl"]
+      QqWeiboAddPicJobLog.log  "add_rich success!"
     else
       params[:result] = 1
       params[:error_msg] = result["msg"]
       QqWeiboAddPicJobLog.log response
     end
-=end
+
 
     if !callback.blank?
       begin

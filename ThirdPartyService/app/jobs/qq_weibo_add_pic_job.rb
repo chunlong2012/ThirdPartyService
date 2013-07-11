@@ -22,6 +22,7 @@ class QqWeiboAddPicJob
       params[:sync_history_id] = sync_history_id
       params[:remote_site_id]  = result["data"]["id"]
       params[:remote_pic] = result["imgurl"]
+      QqWeiboAddPicJobLog.log "qq_weibo_sync success!"
     else
       params[:result] = 1
       params[:error_msg] = result["msg"]
