@@ -77,10 +77,11 @@ class QqWeibo
        return "http://url.cn/" + result["data"]["short_url"]
      end
 
-     def add_rich(access_token,open_id,title,content,clientip,lat,lng,type,img_file,jump_url,androidcall,iphonecall)
+     def add_rich(access_token,open_id,title,content,introduce,clientip,lat,lng,type,img_file,jump_url,iframe_url,androidcall,iphonecall)
        params = {:format => "json", :access_token => access_token, :oauth_consumer_key => @@APP_ID, :openid => open_id,
                  :oauth_version => '2.a', :scope => 'all',
-                 :title => title, :content => content, :clientip => clientip, :type => type}
+                 :title => title, :content => content, :introduce => introduce, :clientip => clientip, :type => type
+                }
 
        params[:longitude] = lng  unless lng != nil
        params[:latitude] = lat   unless lat != nil
@@ -89,19 +90,21 @@ class QqWeibo
        img_url = QqWeibo.upload_pic(access_token,open_id,img_file)
        puts img_url
 
+
        params[:img_url] = img_url
        params[:jump_url] = jump_url
-
+       params[:iframe_url] = iframe_url
        params[:androidcall] = androidcall
        params[:iphonecall] = iphonecall
 
-       url =  "https://test.open.t.qq.com"  + "/api/t/add_rich"
+       puts params
+
+       url =  "https://open.t.qq.com"  + "/api/t/add_rich"
 
        begin
-         response = RestClient.get url + "?" + params.to_query
+         response = RestClient.post url,params
          puts response
          result = JSON.parse response
-         puts result.to_json
        rescue Exception => e
          result = nil
          puts e.message

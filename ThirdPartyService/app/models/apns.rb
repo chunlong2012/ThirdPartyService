@@ -49,19 +49,22 @@ module APNS
             info "ios push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           elsif query["device"] == 1  #"android"
              php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
+
              `php #{php_path} #{query["token"]} #{query["message"]}`
              # `php #{php_path} "#{type}" "#{token}" "#{message}" "#{badge}" "#{user_info}" "#{sound}"`
              info "anroid push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           end
         when 1 # group push
-          info "Start group push with message(#{ query["message"] })"
+          if query["device"] == 0      #"ios"
+            info "ios push: Start group push with message(#{ query["message"] })"
+            Token.each_token(query[:app], query[:device]) do |token|
+              n = APNS::Notification.new(token[:token], query["message"])
+              @net[token[:device]] [token[:app].to_sym].sendmsg(n.packaged_notification)
+            end
+            info "ios push: Finish group push"
+          elsif query["device"] == 1  #"android"
 
-          Token.each_token(query[:app], query[:device]) do |token|
-            n = APNS::Notification.new(token[:token], query["message"])
-            @net[token[:device]] [token[:app].to_sym].sendmsg(n.packaged_notification)
           end
-
-          info "Finish group push"
       end
 
       MessageQueue.remove_query(query)

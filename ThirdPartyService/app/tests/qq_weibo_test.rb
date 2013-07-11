@@ -22,14 +22,19 @@ class QqWeiboTest
     end
 
     def test_add_rich
-      moment_url = "http://vida.fm/moments/rich?id=2137007"
-      jump_url = QqWeibo.shorten_url(@@ACCESS_TOKEN,@@OPEN_ID,moment_url)
+      jump_url = "http://vida.fm"
+      jump_url = QqWeibo.shorten_url(@@ACCESS_TOKEN,@@OPEN_ID,jump_url)
       puts jump_url
+
+      iframe_url = "http://vida.fm/moments/2175656"
+     # iframe_url = QqWeibo.shorten_url(@@ACCESS_TOKEN,@@OPEN_ID,moment_url)
+     # puts iframe_url
 
       androidcall = "http://vida.fm/d/android"
       iphonecall =  "https://itunes.apple.com/cn/app/id454984086?ls=1"
 
-      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content","42.96.139.12",nil,nil,8,"test.png",jump_url,androidcall,iphonecall)
+      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl ycl","introduce",nil,nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
+#      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl","introduce","42.96.139.12",nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
     end
   end
 end
