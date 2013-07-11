@@ -49,8 +49,8 @@ module APNS
             info "ios push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           elsif query["device"] == 1  #"android"
              php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
-
-             `php #{php_path} #{query["token"]} #{query["message"]}`
+						 message = query["message"].gsub("\"","\\\"")
+             `php #{php_path} #{query["token"]} "#{message}"`
              # `php #{php_path} "#{type}" "#{token}" "#{message}" "#{badge}" "#{user_info}" "#{sound}"`
              info "anroid push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
           end
