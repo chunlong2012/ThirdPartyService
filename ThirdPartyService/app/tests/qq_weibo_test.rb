@@ -33,8 +33,24 @@ class QqWeiboTest
       androidcall = "http://vida.fm/d/android"
       iphonecall =  "https://itunes.apple.com/cn/app/id454984086?ls=1"
 
-      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl ycl","introduce",nil,nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
+    #  QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl ycl","introduce",nil,nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
 #      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl","introduce","42.96.139.12",nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
+
+      params = {}
+      params[:sync_history_id] = 1500
+      params[:token] = @@ACCESS_TOKEN
+      params[:open_id] = @@OPEN_ID
+      params[:title] = "test title"
+      params[:content] = "content "
+      params[:introduce] = "introduce test"
+      params[:pic] = File.new("test.jpg","rb")
+      params[:jump_url] = jump_url
+      params[:iframe_url] = iframe_url
+      params[:androidcall] = androidcall
+      params[:iphonecall] = iphonecall
+
+      response = RestClient.post "vimi.in:6000/qq_weibo/async_add_rich", params
+      puts response
     end
   end
 end
