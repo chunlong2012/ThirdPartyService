@@ -86,10 +86,8 @@ class QqWeibo
        params[:longitude] = lng  unless lng != nil
        params[:latitude] = lat   unless lat != nil
 
-       puts "img_url begin"
        img_url = QqWeibo.upload_pic(access_token,open_id,img_file)
-       puts img_url
-
+       jump_url = QqWeibo.shorten_url(access_token,open_id,jump_url)
 
        params[:img_url] = img_url
        params[:jump_url] = jump_url
@@ -97,19 +95,9 @@ class QqWeibo
        params[:androidcall] = androidcall
        params[:iphonecall] = iphonecall
 
-       puts params
 
        url =  "https://open.t.qq.com"  + "/api/t/add_rich"
-
-       begin
-         response = RestClient.post url,params
-         puts response
-         result = JSON.parse response
-       rescue Exception => e
-         result = nil
-         puts e.message
-       end
-
+       response = RestClient.post url,params
      end
 
   end

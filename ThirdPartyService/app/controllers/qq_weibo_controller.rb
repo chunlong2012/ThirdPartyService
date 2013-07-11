@@ -20,7 +20,7 @@ class QqWeiboController < ApplicationController
 
   def async_add_rich
      thumbnail_file = "public/rich_" + params[:sync_history_id].to_s
-     File.open(file_name,"wb") do |f|
+     File.open(thumbnail_file,"wb") do |f|
        f.write(params[:pic].read)
      end
 

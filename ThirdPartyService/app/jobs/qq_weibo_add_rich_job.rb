@@ -9,8 +9,9 @@ class QqWeiboAddRichJob
       response = QqWeibo.add_rich(access_token,open_id,title,content,introduce,client_ip,lat,lng,8,thumbnail_file,jump_url,iframe_url,androidcall,iphonecall)
       QqWeiboAddPicJobLog.log response
       result =  JSON.parse response
-    rescue
+    rescue Exception=>e
       response = nil
+      QqWeiboAddPicJobLog.log e.message
     end
 
 
