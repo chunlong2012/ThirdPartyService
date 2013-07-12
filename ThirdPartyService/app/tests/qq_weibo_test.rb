@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 class QqWeiboTest
   @@ACCESS_TOKEN = 'b487dc175f2f46b9e4dc48e77c4d03c6'
   @@OPEN_ID = '34b3e6c365a01269b8ea920a05fbfaa7'
@@ -23,7 +25,7 @@ class QqWeiboTest
 
     def test_add_rich
       jump_url = "http://vida.fm"
-      iframe_url = "http://vida.fm/moments/2175656"
+      iframe_url = "http://vida.fm/moments/rich?id=2111451"
       androidcall = "http://vida.fm/d/android"
       iphonecall =  "https://itunes.apple.com/cn/app/id454984086?ls=1"
 
@@ -31,12 +33,13 @@ class QqWeiboTest
 #      QqWeibo.add_rich(@@ACCESS_TOKEN,@@OPEN_ID,"title","content test ycl","introduce","42.96.139.12",nil,nil,8,"test.jpg",jump_url,iframe_url,androidcall,iphonecall)
 
       params = {}
-      params[:sync_history_id] = 1600
+      params[:sync_history_id] = 1601
       params[:token] = @@ACCESS_TOKEN
       params[:open_id] = @@OPEN_ID
-      params[:title] = "test title 1600"
-      params[:content] = "content "
-      params[:introduce] = "introduce test 1600"
+      params[:title] = "我的微电影"
+      params[:content] = "content vida test"
+      params[:introduce] = "一分，一秒，一帧。我把照片做成微电影，每一帧都是我眼中的景色。点击看看我的照片微电影吧~"
+
       params[:pic] = File.new("test.jpg","rb")
       params[:jump_url] = jump_url
       params[:iframe_url] = iframe_url
