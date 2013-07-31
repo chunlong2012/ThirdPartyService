@@ -1,97 +1,103 @@
 #encoding: utf-8
 
 module APNS
-	@hold_time = 600	# second
-	@net = { 0 => {
-				:vimi => Connection.new( "vimi-apns.pem" , nil ) ,
-				:vida => Connection.new( "vida-apns.pem" , nil ) ,
-			} ,
-			1 => {
-			}
+	@hold_time = 60	# second
+	@net = { 0 => { } ,
+			1 => { }
 		}
 	# 在@net中 0为ios的连接 1为android的连接
 
+	# 打印log信息至文件
 	def self.info( msg )
-		#puts "[#{ Time .now }] #{ msg }"
 		ApnsPushLog.log( msg )
 	end
 
-	def self.open_all_connection
-		info "Start connect to Notification Server"
-		@net[ 0 ] .each { |c| c[ 1 ] .open_connection }
-		@net[ 1 ] .each { |c| c[ 1 ] .open_connection }
-		info "Connection Success"
+	# 由于等待时间过长，则所有连接重新连接
+	def self.reconnect_all
+		@net[ 0 ] .each{ |c| c[ 1 ] .reconnect }
 	end
 
-	def self.close_all_connection
-		@net[ 0 ] .each { |c| c[ 1 ] .close_connection }
-		@net[ 1 ] .each { |c| c[ 1 ] .close_connection }
-		info "Close Connection"
+	# 发送消息的方法细化
+	def self.ios_push( app , token , message )
+		noti = APNS::Notification.new( token , message )
+		@net[ 0 ] [ app.to_sym ].sendmsg( noti.packaged_notification )
 	end
 
+	def self.android_push( app , token , message )
+		php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
+		message = message.gsub("\"","\\\"")
+		`php #{php_path} #{token} "#{message}"`
+	end
+
+	def self.single_push_nolog( device , app , token , message )
+		ios_push( app , token , message ) if device == "ios" 
+		android_push( app , token , message ) if device == "android"
+	end
+
+	def self.single_push( device , app , token , message )
+		single_push_nolog( device , app , token , message )
+		info "#{ device } push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
+	end
+
+	def self.group_push( device , message , app )
+		info "group push: Start group push with message(#{message}) [app:#{ app }]"
+		Token.each_token do |t|
+			single_push( t[ "device" ] , t[ "app" ] , t[ "token" ] , message ) if ( t[ "device" ] == device || device .nil? ) && t[ "app" ] == app 
+		end
+		info "group push: Finish group push"
+	end
+
+	# 监听 redis 中请求
 	def self.working
-		info "=========>>> starting working to sending push <<<========="
+		@net[ 0 ] [ :vimi ] = Connection.new( "vimi-apns.pem" , nil )
+		@net[ 0 ] [ :vida ] = Connection.new( "vida-apns.pem" , nil )
 		last_send_time = Time.now
-		open_all_connection
 
-    while true
-      query = MessageQueue.get_query
-      sleep 10 if Time.now - last_send_time >= @hold_time
-      sleep 2 and next if query.nil?
+		while true
+			query = MessageQueue.get_query
+			sleep 5 if Time.now - last_send_time >= @hold_time
+			sleep 2 and next if query.nil?
+			reconnect_all if Time.now - last_send_time >= @hold_time
 
-      info "Error: Push message not found!!!" if query["message"].nil?
+			case query[ "command_type" ]
+			when 0 # single push
+				single_push( query[ "device" ] , query[ "app" ] , query[ "token" ] , query[ "message" ] )
+			when 1 # group push
+				group_push( query[ "device" ] , query[ "message" ] , query[ "app" ] )
+			end
 
-      case query["command_type"]
-        when 0 # single push
-          if query["device"] == 0      #"ios"
-            n = APNS::Notification.new(query["token"], query["message"])
-            @net[query["device"]] [query["app"].to_sym].sendmsg(n.packaged_notification)
-            info "ios push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
-          elsif query["device"] == 1  #"android"
-             php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
-						 message = query["message"].gsub("\"","\\\"")
-             `php #{php_path} #{query["token"]} "#{message}"`
-             # `php #{php_path} "#{type}" "#{token}" "#{message}" "#{badge}" "#{user_info}" "#{sound}"`
-             info "anroid push: Message(#{ query["message"] }) has been sent to user(#{ query["token"] })"
-          end
-        when 1 # group push
-          if query["device"] == 0      #"ios"
-            info "ios push: Start group push with message(#{ query["message"] })"
-            Token.each_token(query[:app], query[:device]) do |token|
-              n = APNS::Notification.new(token[:token], query["message"])
-              @net[token[:device]] [token[:app].to_sym].sendmsg(n.packaged_notification)
-            end
-            info "ios push: Finish group push"
-          elsif query["device"] == 1  #"android"
-
-          end
-      end
-
-      MessageQueue.remove_query(query)
-      last_send_time = Time.now
-    end
-
-		close_connection
+			MessageQueue.remove_query
+			last_send_time = Time.now
+		end
 	end
 
+	# 开始监听，捕获错误
 	def self.start_working
 		begin
 			working
 		rescue Exception=>e
-			info "Error: #{ e.message }"
+			info "Error: #{ e.message } in \n\t #{ e.backtrace.join( "\n\t" ) }"
 		end
 	end
 
+	# 测试方法 （发送至我的iphone5）
 	def self.test01
 		# Single Push Test
-		RestClient.post "vimi.in:6000/push/ios_push",:token => "b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab", :message => "这是一个中文测试" , :app => "vimi"
+		RestClient.post "0.0.0.0:3000/push/ios_push",:token => "b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab", :message => "这是一个中文测试" , :app => "vimi"
+		#RestClient.post "vimi.in:6000/push/ios_push",:token => "b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab", :message => "这是一个中文测试" , :app => "vimi"
+	end
+
+	def self.test03
+		RestClient.post "0.0.0.0:3000/push/add_token",:token => "b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab", :message => "这是一个中文测试" , :app => "vimi"
 	end
 
 	def self.test02
 		# Group Push Test
-		RestClient.post "vimi.in:6000/push/group_push" , :message => "这里在测试多人的push情况" , :app => "vida"
+		RestClient.post "0.0.0.0:3000/push/group_push" , :message => "这里在测试多人的push情况" , :app => "vimi"
 	end
 
+
+	# 发送的 ios push 的封装对象
 	class Notification
 		attr_accessor :device_token, :alert, :badge, :sound, :other
 		
@@ -127,6 +133,5 @@ module APNS
 			aps.merge!(self.other) if self.other
 			aps.to_json.gsub(/\\u([\da-fA-F]{4})/) {|m| [$1].pack("H*").unpack("n*").pack("U*")}
 		end
-		
 	end
 end

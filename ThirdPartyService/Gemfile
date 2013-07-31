@@ -15,4 +15,5 @@ gem 'rack','1.4.1'
 gem 'log4r'
 gem 'unicorn'
 gem 'uuidtools'
-gem 'rb-readline'
+gem 'rb-readline' , '~> 0.4.2'
+
