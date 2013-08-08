@@ -7,13 +7,8 @@ class MessageQueue
     "APNS-MESSAGE-QUEUE"
   end
 
-  def self.new_single_push( token , message , app , device )
-    s = { :command_type => 0 , :token => token , :message => message , :app => app , :device => device } .to_json
-    $redis .rpush( redis_code , s )
-  end
-
-  def self.new_group_push( message , app , device )
-    s = { :command_type => 1 , :message => message , :app => app , :device => device } .to_json
+  def self.new_single_push( token_list , message , app , device )
+    s = { :token_list => token_list , :message => message , :app => app , :device => device } .to_json
     $redis .rpush( redis_code , s )
   end
 
@@ -22,16 +17,21 @@ class MessageQueue
     s = $redis .lindex( redis_code , 0 )
     q = JSON.parse( s ) unless s .nil?
     while !q.nil? && ( q[ "message" ] .nil? || q[ "app" ] .nil? )
-      ApnsPushLog.log( "Warning: Parameter not found in single push! DELETE! (#{ q[ "command_type" ] },#{ q[ "device" ]},#{ q[ "app" ] },#{ q[ "token" ] },#{ q[ "message" ] })" ) 
+      ApnsPushLog.log( "Warning: Parameter not found in single push! DELETE! (#{ q[ "device" ]},#{ q[ "app" ] },#{ q[ "token_list" ] },#{ q[ "message" ] })" ) 
       remove_query
       q = nil
       s = $redis .lindex( redis_code , 0 )
       q = JSON.parse( s ) unless s .nil?
     end
+    q[ "token_list" ] = JSON.parse( q[ "token_list" ] ) unless q.nil?
     q
   end
 
   def self.remove_query
     $redis .lpop( redis_code )
+  end
+
+  def self.round
+    $redis .rpush( redis_code , $redis .lpop( redis_code ) )
   end
 end
