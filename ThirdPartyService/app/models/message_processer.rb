@@ -39,11 +39,11 @@ module MessageProcesser
 	end
 
 	def self.push( device , app , tokenl , message )
-		unless single_push_nolog( device , app , tokenl , message )
-			info "Warning: #{ device } push: Message(#{ message }) push to user(#{ tokenl }) [app:#{ app }] has been wrong."
-			MessageQueue.remove_query
-		end else 
+		if  single_push_nolog( device , app , tokenl , message )
 			info "#{ device } push: Message(#{ message }) push to user(#{ tokenl }) [app:#{ app }]"
+		else 
+			info "Warning: #{ device } push: Message(#{ message }) push to user(#{ tokenl }) [app:#{ app }] has been wrong."
+	  end
 	end
 
 	# 监听 redis 中请求
