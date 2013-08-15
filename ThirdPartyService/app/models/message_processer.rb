@@ -20,30 +20,26 @@ module MessageProcesser
 	# 发送消息的方法细化
 	def self.ios_push( app , token , message )
 		noti = ApnsNotification.new( token , message )
-		@net[ 0 ] [ app.to_sym ].sendmsg( noti.packaged_notification )
+		if @net[ 0 ] [ app.to_sym ].sendmsg( noti.packaged_notification )
+	    info "ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
+		else
+			info "Warning: ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }] has been wrong."
+		end
 	end
 
 	def self.android_push( app , token , message )
 		php_path = Rails.root.to_s + "/../getui-php-sdk/single-push.php"
 		message = message.gsub("\"","\\\"")
 		`php #{php_path} #{token} "#{message}"`
-		true
-	end
 
-	def self.single_push_nolog( device , app , tokenl , message )
-		tokenl .each do |token|
-			return false if device == "ios" && !ios_push( app , token , message )
-			return false if device == "android" && !android_push( app , token , message ) 
-		end
-		true
+	  info "android push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
 	end
 
 	def self.push( device , app , tokenl , message )
-		if  single_push_nolog( device , app , tokenl , message )
-			info "#{ device } push: Message(#{ message }) push to user(#{ tokenl }) [app:#{ app }]"
-		else 
-			info "Warning: #{ device } push: Message(#{ message }) push to user(#{ tokenl }) [app:#{ app }] has been wrong."
-	  end
+	  tokenl.each do |token|
+        ios_push(app, token, message) if device == "ios" 
+			  android_push(app, token, message) if device == "android" 
+		end
 	end
 
 	# 监听 redis 中请求
