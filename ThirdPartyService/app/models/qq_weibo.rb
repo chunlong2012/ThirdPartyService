@@ -45,7 +45,8 @@ class QqWeibo
        begin
           response = RestClient.post url, params
           result = JSON.parse response
-       rescue
+       rescue Exception=>e
+          QqWeiboAddRichJobLog.log  "=====upload_pic#{e.message}======="
           result = nil
        end
 
@@ -67,6 +68,7 @@ class QqWeibo
          response = RestClient.get url + "?" + params.to_query
          result = JSON.parse response
        rescue Exception => e
+         QqWeiboAddRichJobLog.log  "=====shorten_url#{e.message}======="
          result = nil
        end
 
@@ -96,6 +98,7 @@ class QqWeibo
        params[:iphonecall] = iphonecall
 
 
+       QqWeiboAddRichJobLog.log params.to_json 
        url =  "https://open.t.qq.com"  + "/api/t/add_rich"
        response = RestClient.post url,params
      end
