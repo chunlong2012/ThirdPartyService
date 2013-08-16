@@ -7,9 +7,10 @@ class MessageQueue
     "APNS-MESSAGE-QUEUE"
   end
 
-  def self.new_single_push( token_list , message , app , device )
-    s = { :token_list => token_list , :message => message , :app => app , :device => device } .to_json
-    $redis .rpush( redis_code , s )
+  def self.new_single_push( token_list , message , app , device , options )
+    s = { :token_list => token_list , :message => message , :app => app , :device => device }
+    s[ :options ] = options unless options.nil?
+    $redis .rpush( redis_code , s.to_json )
   end
 
   def self.get_query
@@ -24,6 +25,7 @@ class MessageQueue
       q = JSON.parse( s ) unless s .nil?
     end
     q[ "token_list" ] = JSON.parse( q[ "token_list" ] ) unless q.nil?
+    q[ "options" ] = JSON.parse( q[ "options" ] ) unless q.nil? || q[ "options" ] .nil?
     q
   end
 

@@ -18,12 +18,12 @@ module MessageProcesser
 	end
 
 	# 发送消息的方法细化
-	def self.ios_push( app , token , message )
-		noti = ApnsNotification.new( token , message )
+	def self.ios_push( app , token , message , options )
+		noti = ApnsNotification.new( token , { :alert => message , :other => options } )
 		if @net[ 0 ] [ app.to_sym ].sendmsg( noti )
-			info "ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
+			info "ios push: Message(#{ message }) push to user(#{ token }) [options:#{ options.to_json }] [app:#{ app }]"
 		else
-			info "Warning: ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }] has been wrong."
+			info "Warning: ios push: Message(#{ message }) push to user(#{ token }) [options:#{ options.to_json }] [app:#{ app }] has been wrong."
 		end
 	end
 
@@ -35,10 +35,10 @@ module MessageProcesser
 		info "android push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
 	end
 
-	def self.push( device , app , tokenl , message )
-	  tokenl.each do |token|
-        ios_push(app, token, message) if device == "ios" 
-			  android_push(app, token, message) if device == "android" 
+	def self.push( device , app , tokenl , message , options )
+		tokenl.each do |token|
+			ios_push(app, token, message,options) if device == "ios" 
+			android_push(app, token, message) if device == "android" 
 		end
 	end
 
@@ -54,7 +54,7 @@ module MessageProcesser
 			sleep 2 and next if query.nil?
 			reconnect_all if Time.now - last_send_time >= @hold_time
 
-			push( query[ "device" ] , query[ "app" ] , query[ "token_list" ] , query[ "message" ] )
+			push( query[ "device" ] , query[ "app" ] , query[ "token_list" ] , query[ "message" ] , query[ "options" ] )
 
 			MessageQueue.remove_query
 			last_send_time = Time.now
@@ -73,6 +73,6 @@ module MessageProcesser
 	# 测试方法 （发送至我的iphone5）
 	def self.test01
 		# Single Push Test
-		RestClient.post "0.0.0.0:3000/push/ios_push",:token_list => '["b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab","b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab","b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab"]' , :message => "这是一个中文测试" , :app => "vimi"
+		RestClient.post "0.0.0.0:3000/push/ios_push", { :token_list => '["b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab"]' , :message => "给我跳转到百度！" , :app => "vimi" , :options => { :u => { :t => "url" , :c => "" } } .to_json }
 	end
 end
