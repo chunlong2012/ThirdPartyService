@@ -20,8 +20,8 @@ module MessageProcesser
 	# 发送消息的方法细化
 	def self.ios_push( app , token , message )
 		noti = ApnsNotification.new( token , message )
-		if @net[ 0 ] [ app.to_sym ].sendmsg( noti.packaged_notification )
-	    info "ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
+		if @net[ 0 ] [ app.to_sym ].sendmsg( noti )
+			info "ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
 		else
 			info "Warning: ios push: Message(#{ message }) push to user(#{ token }) [app:#{ app }] has been wrong."
 		end
@@ -32,7 +32,7 @@ module MessageProcesser
 		message = message.gsub("\"","\\\"")
 		`php #{php_path} #{token} "#{message}"`
 
-	  info "android push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
+		info "android push: Message(#{ message }) push to user(#{ token }) [app:#{ app }]"
 	end
 
 	def self.push( device , app , tokenl , message )
@@ -44,7 +44,7 @@ module MessageProcesser
 
 	# 监听 redis 中请求
 	def self.working
-		#@net[ 0 ] [ :vida ] = ApnsConnnection.new( "vida-apns.pem" , nil )
+		@net[ 0 ] [ :vida ] = ApnsConnnection.new( "vida-apns.pem" , nil )
 		@net[ 0 ] [ :vimi ] = ApnsConnnection.new( "vimi-apns.pem" , nil )
 		last_send_time = Time.now
 

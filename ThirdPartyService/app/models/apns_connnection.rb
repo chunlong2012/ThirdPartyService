@@ -39,11 +39,17 @@ class ApnsConnnection
 	end
 
 	def sendmsg( msg )
-		for i in 1 .. 3 
-			return true if sendmsg_sub( msg )
-			reconnect
+		begin 
+			msg = msg.packaged_notification
+			for i in 1 .. 3 
+				return true if sendmsg_sub( msg )
+				reconnect
+			end
+			MessagePushLog.log( "3 reconnection fail, cancel" )
+			false 
+		rescue Exception=>e
+			MessagePushLog.log( "Error: #{ e.message } in \n\t #{ e.backtrace.join( "\n\t" ) }" )
+			false
 		end
-		MessagePushLog.log( "3 reconnection fail, cancel" )
-		false 
 	end
 end
