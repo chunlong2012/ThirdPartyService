@@ -1,4 +1,5 @@
 # 发送的 ios push 的封装对象
+
 class ApnsNotification
 	attr_accessor :device_token, :alert, :badge, :sound, :other
 	
@@ -17,6 +18,12 @@ class ApnsNotification
 	end
 			
 	def packaged_notification
+		# 对于超过长度的消息需要将消息切断，所有消息按照中文字符计算其长度
+		if self.alert.length * 3 + self.other.to_json.length > 256 - 25
+			max_length = ( 256 - 25 - self.other.to_json.length ) / 3 
+			self.alert = self.alert[ 0 .. max_length ] + "..."
+		end
+
 		pt = self.packaged_token
 		pm = self.packaged_message
 		[0, 0, 32, pt, 0, pm.bytesize, pm].pack("ccca*cca*")

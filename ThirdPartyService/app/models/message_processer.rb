@@ -73,6 +73,13 @@ module MessageProcesser
 	# 测试方法 （发送至我的iphone5）
 	def self.test01
 		# Single Push Test
-		RestClient.post "0.0.0.0:3000/push/ios_push", { :token_list => '["b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab"]' , :message => "给我跳转到百度！" , :app => "vimi" , :options => { :u => { :t => "url" , :c => "" } } .to_json }
+		# 
+		# "Vida微图记首届【微电影大赛】开始了！参加就有Q币拿，每天都送出 OPPO夜拍神器 和Tiffany银项链各一个！还有终极大奖价值两万元的奢华境外游！20万奖品，人人有，天天送！快去看看吧~" , 
+		RestClient.post "0.0.0.0:3000/push/ios_push", { 
+			:token_list => '["b796a464 3e20bfb5 42aeaf13 fa7e72eb d6d40109 b3df686f ddba860c e0754bab"]' , 
+			:message => "Vida微图记首届【微电影大赛】开始了！参加就有Q币拿，每天都送出 OPPO夜拍神器 和Tiffany银项链各一个！还有终极大奖价值两万元的奢华境外游！20万奖品，人人有，天天送！快去看看吧~" ,
+			:app => "vida" ,
+			:options => { :u => { :url => "http://www.baidu.com/" , :c => "" } } .to_json 
+		}
 	end
 end
